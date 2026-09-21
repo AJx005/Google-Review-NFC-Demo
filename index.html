@@ -2,186 +2,372 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#171717">
-  <title>Google Review NFC Card Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#202124">
+  <title>Review Demo</title>
   <style>
-    :root{--bg:#151515;--panel:#202124;--border:#3f4248;--text:#f1f3f4;--muted:#aeb3ba;--blue:#8ab4f8;--green:#34a853;--yellow:#fbbc04}
+    :root{
+      --bg:#202124;
+      --surface:#202124;
+      --surface-2:#303134;
+      --border:#9aa0a6;
+      --text:#e8eaed;
+      --muted:#9aa0a6;
+      --blue:#8ab4f8;
+      --blue-bg:#1a73e8;
+      --star:#fbbc04;
+    }
+
     *{box-sizing:border-box}
-    body{margin:0;background:radial-gradient(circle at 50% -10%,rgba(138,180,248,.12),transparent 34%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
+    body{
+      font-family:Arial,Roboto,Helvetica,sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+
     button,textarea{font:inherit}
-    .page{width:min(100%,720px);margin:auto;padding:22px 14px 42px}
-    .badge{display:flex;align-items:center;gap:8px;width:max-content;margin:0 auto 18px;padding:8px 12px;border:1px solid var(--border);border-radius:999px;color:#d0d4d8;background:#202124;font-size:12px}
-    .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
-    .panel,.offer{border:1px solid #303238;border-radius:24px;background:rgba(32,33,36,.9);padding:22px 18px;box-shadow:0 18px 45px rgba(0,0,0,.3)}
-    .profile{display:flex;align-items:center;gap:14px;margin-bottom:24px}
-    .avatar{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#1e88e5,#5e35b1);font-weight:700;font-size:25px}
-    h1,h2,p{margin-top:0}
-    h1{margin-bottom:5px;font-size:28px}
-    h2{font-size:30px;line-height:1.1;margin-bottom:10px}
-    .muted{color:var(--muted);font-size:14px}
-    .prompt{text-align:center;color:#d4d7db;font-size:14px}
-    .stars{display:flex;justify-content:center;gap:6px;margin:10px 0 10px}
-    .star{width:50px;height:50px;border:0;border-radius:50%;background:transparent;color:#7e838b;font-size:41px;cursor:pointer}
-    .star.active{color:var(--yellow)}
-    .rating{text-align:center;color:var(--blue);min-height:20px;font-size:13px;margin-bottom:14px}
-    textarea{width:100%;min-height:145px;border:1.5px solid #74777d;border-radius:13px;padding:15px;background:#1b1c1f;color:var(--text);outline:none;font-size:16px;resize:vertical}
-    textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(138,180,248,.12)}
-    .actions{display:grid;gap:10px;margin-top:14px}
-    .btn{min-height:52px;border-radius:999px;border:1px solid #3b3e44;cursor:pointer;font-weight:650}
-    .secondary{background:#252934;color:var(--blue)}
-    .primary{background:linear-gradient(90deg,#2f76f4,#5a93ff);color:white;border:0}
-    .btn:disabled{opacity:.38;cursor:not-allowed}
-    .disclaimer{margin:11px 2px 0;text-align:center;color:#8f949c;font-size:11px;line-height:1.45}
-    .offer{margin-top:18px;background:linear-gradient(145deg,#1d1f22,#191a1d)}
-    .eyebrow{color:var(--blue);text-transform:uppercase;letter-spacing:.12em;font-weight:700;font-size:12px}
-    .lead{color:#c2c6cb;line-height:1.55}
-    .benefits{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
-    .benefit{display:flex;gap:8px;align-items:center;font-size:14px}
-    .check{width:23px;height:23px;border-radius:50%;background:var(--green);display:grid;place-items:center;font-weight:800;flex:none}
-    .products{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .product{padding:14px;border:1px solid #45484e;border-radius:16px;background:#202226;color:var(--text);text-align:left;cursor:pointer}
-    .product.selected{border-color:var(--blue);background:#232b38}
-    .mock{height:74px;border-radius:11px;background:linear-gradient(145deg,#0c355e,#111820);display:grid;place-items:center;text-align:center;font-size:12px;font-weight:700;letter-spacing:.05em;margin-bottom:12px}
-    .product small{display:block;color:var(--muted);line-height:1.35}
-    .product strong{display:block;font-size:27px;margin-top:5px}
-    .selected-line{text-align:center;color:#c8ccd1;font-size:13px;min-height:20px;margin:13px 0}
-    .payment{text-align:center;color:var(--muted);font-size:13px;padding-top:15px;border-top:1px solid #34373c}
-    .steps{display:grid;gap:10px;margin-top:16px}
-    .step{display:grid;grid-template-columns:34px 1fr;gap:11px;border:1px solid #303238;border-radius:14px;padding:13px}
-    .num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#28313e;color:var(--blue);font-weight:700}
-    .step h3{margin:1px 0 3px;font-size:14px}
-    .step p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
-    .footer{text-align:center;color:#777c84;font-size:11px;line-height:1.5;margin-top:20px}
-    .toast{position:sticky;bottom:14px;margin:14px auto 0;padding:13px 15px;border:1px solid #4b4f56;border-radius:14px;background:#2a2c31;color:#f0f1f3;opacity:0;transform:translateY(8px);pointer-events:none;transition:.18s}
-    .toast.show{opacity:1;transform:none}
-    @media(max-width:430px){.page{padding-left:11px;padding-right:11px}.panel,.offer{border-radius:19px;padding:16px 14px}.benefits{grid-template-columns:1fr}.stars{gap:0}.star{width:47px;height:47px;font-size:38px}.product{padding:11px}.product strong{font-size:23px}}
+
+    .page{
+      width:min(100%,680px);
+      margin:0 auto;
+      padding:54px 32px 24px;
+    }
+
+    .business{
+      margin:0 0 30px;
+      text-align:center;
+      color:#bdc1c6;
+      font-size:14px;
+      font-weight:500;
+    }
+
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      margin-bottom:34px;
+    }
+
+    .avatar-wrap{
+      position:relative;
+      flex:0 0 auto;
+    }
+
+    .avatar{
+      width:72px;
+      height:72px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      background:#f4511e;
+      color:#fff;
+      font-size:39px;
+      font-weight:400;
+      line-height:1;
+    }
+
+    .badge{
+      position:absolute;
+      right:-4px;
+      bottom:-2px;
+      width:27px;
+      height:27px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      background:#fff;
+      border:2px solid #202124;
+    }
+
+    .badge-star{
+      width:19px;
+      height:19px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      background:#8ab4f8;
+      color:#fff;
+      font-size:11px;
+      line-height:1;
+    }
+
+    .identity{
+      min-width:0;
+    }
+
+    .name{
+      margin:0;
+      font-size:24px;
+      line-height:1.2;
+      font-weight:400;
+      color:#f1f3f4;
+    }
+
+    .public-line{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:6px;
+      color:#9aa0a6;
+      font-size:19px;
+      line-height:1.3;
+    }
+
+    .info{
+      width:24px;
+      height:24px;
+      border:2px solid #9aa0a6;
+      border-radius:50%;
+      display:inline-grid;
+      place-items:center;
+      font-size:15px;
+      font-weight:700;
+      line-height:1;
+    }
+
+    .stars{
+      display:flex;
+      justify-content:flex-start;
+      gap:24px;
+      margin:0 0 34px 102px;
+    }
+
+    .star{
+      width:48px;
+      height:48px;
+      padding:0;
+      border:0;
+      background:transparent;
+      color:#9aa0a6;
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      font-size:49px;
+      line-height:1;
+      transition:transform .12s ease,color .12s ease;
+    }
+
+    .star:hover,
+    .star:focus-visible{
+      transform:scale(1.05);
+      outline:none;
+    }
+
+    .star.active{color:var(--star)}
+
+    .review-box{
+      width:100%;
+      min-height:225px;
+      padding:28px 26px;
+      border:2px solid #9aa0a6;
+      border-radius:8px;
+      background:transparent;
+      color:#e8eaed;
+      resize:vertical;
+      outline:none;
+      font-size:24px;
+      line-height:1.45;
+    }
+
+    .review-box::placeholder{color:#bdc1c6;opacity:1}
+    .review-box:focus{border-color:#8ab4f8}
+
+    .photo-btn{
+      width:100%;
+      min-height:72px;
+      margin-top:26px;
+      border:0;
+      border-radius:40px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+      background:#303134;
+      color:#aecbfa;
+      cursor:pointer;
+      font-size:22px;
+      font-weight:500;
+    }
+
+    .camera{
+      width:31px;
+      height:31px;
+      stroke:#8ab4f8;
+      stroke-width:2.2;
+      fill:none;
+      flex:0 0 auto;
+    }
+
+    .post-btn{
+      width:100%;
+      min-height:68px;
+      margin-top:40px;
+      border:0;
+      border-radius:34px;
+      background:#3c4043;
+      color:#80868b;
+      cursor:not-allowed;
+      font-size:21px;
+      font-weight:500;
+      transition:background .14s ease,color .14s ease;
+    }
+
+    .post-btn.enabled{
+      background:#8ab4f8;
+      color:#202124;
+      cursor:pointer;
+    }
+
+    .demo-note{
+      margin:18px auto 0;
+      text-align:center;
+      color:#74787d;
+      font-size:11px;
+      line-height:1.45;
+    }
+
+    .toast{
+      margin:16px auto 0;
+      padding:13px 16px;
+      border-radius:6px;
+      background:#303134;
+      color:#e8eaed;
+      font-size:14px;
+      box-shadow:0 4px 18px rgba(0,0,0,.35);
+      opacity:0;
+      transform:translateY(8px);
+      pointer-events:none;
+      transition:.18s ease;
+    }
+
+    .toast.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    @media(max-width:560px){
+      .page{padding:38px 22px 22px}
+      .business{margin-bottom:24px}
+      .avatar{width:62px;height:62px;font-size:33px}
+      .badge{width:24px;height:24px}
+      .badge-star{width:17px;height:17px;font-size:10px}
+      .name{font-size:20px}
+      .public-line{font-size:16px;gap:7px}
+      .info{width:21px;height:21px;font-size:13px}
+      .stars{margin-left:80px;gap:12px;margin-bottom:28px}
+      .star{width:43px;height:43px;font-size:43px}
+      .review-box{min-height:180px;padding:22px 20px;font-size:19px}
+      .photo-btn{min-height:62px;font-size:18px}
+      .post-btn{min-height:60px;margin-top:34px;font-size:18px}
+    }
+
+    @media(max-width:380px){
+      .page{padding-left:16px;padding-right:16px}
+      .profile{gap:14px}
+      .stars{margin-left:72px;gap:5px}
+      .star{width:39px;height:42px;font-size:40px}
+      .public-line{font-size:15px}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      *{transition:none!important}
+    }
   </style>
 </head>
 <body>
   <main class="page">
-    <div class="badge"><span class="dot"></span> Interactive NFC review demo</div>
+    <div class="business">Demo Business</div>
 
-    <section class="panel" id="demo">
+    <section aria-label="Interactive review demo">
       <div class="profile">
-        <div class="avatar">D</div>
-        <div><h1>Demo Business</h1><div class="muted">Review experience preview</div></div>
+        <div class="avatar-wrap" aria-hidden="true">
+          <div class="avatar">A</div>
+          <div class="badge"><div class="badge-star">★</div></div>
+        </div>
+        <div class="identity">
+          <h1 class="name">Aaron Biju John</h1>
+          <div class="public-line">
+            <span>Posting publicly across Google</span>
+            <span class="info">i</span>
+          </div>
+        </div>
       </div>
 
-      <p class="prompt">Tap a star to try the customer experience</p>
-      <div class="stars" aria-label="Choose a demo rating">
+      <div class="stars" aria-label="Choose a star rating">
         <button class="star" type="button" data-value="1" aria-label="1 star">☆</button>
         <button class="star" type="button" data-value="2" aria-label="2 stars">☆</button>
         <button class="star" type="button" data-value="3" aria-label="3 stars">☆</button>
         <button class="star" type="button" data-value="4" aria-label="4 stars">☆</button>
         <button class="star" type="button" data-value="5" aria-label="5 stars">☆</button>
       </div>
-      <div class="rating" id="rating">No rating selected</div>
 
-      <textarea id="reviewText" maxlength="500" placeholder="Share details of your own experience at this place"></textarea>
+      <textarea
+        id="reviewText"
+        class="review-box"
+        maxlength="500"
+        aria-label="Review details"
+        placeholder="Share details of your own experience at this place"></textarea>
 
-      <div class="actions">
-        <button class="btn secondary" id="photoBtn" type="button">＋ Add photos</button>
-        <button class="btn primary" id="postBtn" type="button" disabled>Post demo review</button>
-      </div>
-      <p class="disclaimer">Demo only. Nothing entered here is sent to Google or stored anywhere.</p>
+      <button class="photo-btn" id="photoBtn" type="button">
+        <svg class="camera" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 6.5 9.3 4h5.4L16 6.5h2.5A2.5 2.5 0 0 1 21 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5V9a2.5 2.5 0 0 1 2.5-2.5H8Z"/>
+          <circle cx="12" cy="13" r="3.5"/>
+          <path d="M18.5 3v4M16.5 5h4"/>
+        </svg>
+        <span>Add photos</span>
+      </button>
+
+      <button class="post-btn" id="postBtn" type="button" disabled>Post</button>
+
+      <p class="demo-note">Interactive demo only — nothing entered here is submitted or stored.</p>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </section>
-
-    <section class="offer">
-      <div class="eyebrow">Tap • Review • Grow</div>
-      <h2>This is what your customers could experience.</h2>
-      <p class="lead">Your real NFC/QR card is programmed to open your business's actual Google review link, making it quick for customers to reach the review screen.</p>
-
-      <div class="benefits">
-        <div class="benefit"><span class="check">✓</span><span>NFC + QR access</span></div>
-        <div class="benefit"><span class="check">✓</span><span>No monthly fee</span></div>
-        <div class="benefit"><span class="check">✓</span><span>Counter-ready setup</span></div>
-        <div class="benefit"><span class="check">✓</span><span>One-time payment</span></div>
-      </div>
-
-      <div class="products">
-        <button class="product selected" type="button" data-name="Large Counter Card" data-price="AED 100">
-          <div class="mock">TAP TO<br>REVIEW US</div>
-          <small>Large Counter Card<br>Approx. 10 × 10 cm</small>
-          <strong>AED 100</strong>
-        </button>
-        <button class="product" type="button" data-name="Small Card" data-price="AED 70">
-          <div class="mock">TAP TO<br>REVIEW US</div>
-          <small>Small Card<br>Credit-card size</small>
-          <strong>AED 70</strong>
-        </button>
-      </div>
-
-      <div class="selected-line" id="selection">Selected: Large Counter Card — AED 100</div>
-      <p class="payment"><strong style="color:#e9ecef">One-time payment.</strong> No subscription or monthly fee.</p>
-
-      <div class="steps">
-        <div class="step"><div class="num">1</div><div><h3>Customer taps or scans</h3><p>The card sits at the reception, counter or checkout.</p></div></div>
-        <div class="step"><div class="num">2</div><div><h3>Your real Google review page opens</h3><p>Each sold card is configured for the customer's actual business review link.</p></div></div>
-        <div class="step"><div class="num">3</div><div><h3>Customer leaves their own genuine review</h3><p>The card makes access easier; the customer decides whether and what to review.</p></div></div>
-      </div>
-
-      <button class="btn primary" id="tryBtn" type="button" style="width:100%;margin-top:16px">Try the review demo</button>
-    </section>
-
-    <p class="footer">Independent product demo. This page is not affiliated with or endorsed by Google.</p>
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </main>
 
   <script>
     const stars=[...document.querySelectorAll('.star')];
-    const ratingEl=document.getElementById('rating');
     const postBtn=document.getElementById('postBtn');
-    const reviewText=document.getElementById('reviewText');
+    const photoBtn=document.getElementById('photoBtn');
     const toast=document.getElementById('toast');
-    let rating=0,toastTimer;
+    let rating=0;
+    let toastTimer;
 
     function showToast(message){
       clearTimeout(toastTimer);
       toast.textContent=message;
       toast.classList.add('show');
-      toastTimer=setTimeout(()=>toast.classList.remove('show'),3000);
+      toastTimer=setTimeout(()=>toast.classList.remove('show'),2600);
     }
 
     function renderStars(){
-      stars.forEach((star,i)=>{
-        const active=i<rating;
+      stars.forEach((star,index)=>{
+        const active=index<rating;
         star.textContent=active?'★':'☆';
         star.classList.toggle('active',active);
+        star.setAttribute('aria-pressed',String(index+1===rating));
       });
-      ratingEl.textContent=rating?rating+' star'+(rating===1?'':'s')+' selected':'No rating selected';
-      postBtn.disabled=!rating;
+
+      postBtn.disabled=rating===0;
+      postBtn.classList.toggle('enabled',rating>0);
     }
 
-    stars.forEach(star=>star.addEventListener('click',()=>{
-      rating=Number(star.dataset.value);
-      renderStars();
-    }));
+    stars.forEach(star=>{
+      star.addEventListener('click',()=>{
+        rating=Number(star.dataset.value);
+        renderStars();
+      });
+    });
 
-    document.getElementById('photoBtn').addEventListener('click',()=>{
-      showToast('Photo upload is disabled in this demo. On Google, customers can add photos normally.');
+    photoBtn.addEventListener('click',()=>{
+      showToast('Photo upload is disabled in this demo.');
     });
 
     postBtn.addEventListener('click',()=>{
-      showToast(reviewText.value.trim()
-        ? 'Demo complete — nothing was submitted or stored.'
-        : 'Demo complete — rating selected. Nothing was submitted.');
-    });
-
-    document.querySelectorAll('.product').forEach(product=>{
-      product.addEventListener('click',()=>{
-        document.querySelectorAll('.product').forEach(p=>p.classList.remove('selected'));
-        product.classList.add('selected');
-        document.getElementById('selection').textContent='Selected: '+product.dataset.name+' — '+product.dataset.price;
-      });
-    });
-
-    document.getElementById('tryBtn').addEventListener('click',()=>{
-      document.getElementById('demo').scrollIntoView({behavior:'smooth',block:'start'});
+      if(!rating) return;
+      showToast('Demo only — your review was not submitted.');
     });
 
     renderStars();
   </script>
 </body>
 </html>
-<!-- Trigger GitHub Pages deployment -->
